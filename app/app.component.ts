@@ -1,14 +1,16 @@
 import { Component } from '@angular/core';
+import { Meal } from './meal.model';
 
 @Component({
   selector: 'app-root',
   template: `
-  <div>
+  <div class="container">
     <h1>Meal Tracker</h1>
     <h3>{{currentFocus}}{{month}}/{{day}}/{{year}}</h3>
-    <ul>
-    <li *ngFor="let currentMeal of meals">Name: {{currentMeal.name}} <br> Details: {{currentMeal.details}} <br> Calories: {{currentMeal.calories}} <br> <button (click)="editMeal()">Edit</button></li>
-    </ul>
+    <meal-list [childMealList]="masterMealList" (clickSender)="editMeal($event)"></meal-list>
+    <hr>
+    <edit-meal [childSelectedMeal] ="selectedMeal" (doneButtonClickedSender)="finishedEditing()"></edit-meal>
+    <new-meal (newMealSender)="addMeal($event)"></new-meal>
   </div>
   `
 })
@@ -19,16 +21,23 @@ export class AppComponent {
   month: number = this.currentTime.getMonth() + 1;
   day: number = this.currentTime.getDate();
   year: number = this.currentTime.getFullYear();
-  meals: Meal[] = [
-    new Meal('Pop.tarts', 'it was very sugary', 300),
-    new Meal('chips', 'it was good', 390)
-];
+  selectedMeal = null;
 
-editMeal() {
+  masterMealList: Meal[] = [
+  new Meal('Pop.tarts', 'it was very sugary', 300),
+  new Meal('chips', 'it was good', 3890)
 
-}
-}
+  ];
 
-export class Meal {
-  constructor(public name: string, public details: string, public calories: number) {}
+  finishedEditing() {
+    this.selectedMeal = null;
+  }
+
+  editMeal(clickedMeal) {
+    this.selectedMeal = clickedMeal;
+  }
+
+  addMeal(newMealFromChild: Meal) {
+    this.masterMealList.push(newMealFromChild);
+  }
 }
